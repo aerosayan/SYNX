@@ -37,47 +37,34 @@ mov bp, 0x8000
 mov sp, bp
 
 ;------------------------------------------------------------------------------
-; Activate tty mode my setting 'ah' to '0x0e' and then move each particular
-; character to 'al' and calling interrupt 0x10 to print them on screen.
+; Print kernel info.
 ;------------------------------------------------------------------------------
-mov ah, 0x0e             ; Activate tty mode
-mov al, 'H'              ; Character to print
-int 0x10                 ; Print to screen
-mov al, 'e'
-int 0x10
-mov al, 'l'
-int 0x10
-int 0x10
-mov al, 'o'
-int 0x10
+mov bx, KERNEL_NAME
+call echo
 
-push 'A'
-push 'B'
-push 'C'
+mov bx, AUTHOR_NAME
+call echo
 
-mov al, [0x7ffe]
-int 0x10
-
-mov al, [0x7ffc]
-int 0x10
-
-mov al, [0x7ffa]
-int 0x10
-
-pop bx                   ; Full word has to be extracted from stack
-mov al, bl               ; Then the desired byte can be accessed
-int 0x10
-
-pop bx
-mov al, bl
-int 0x10
-
-pop bx
-mov al, bl
-int 0x10
-
+mov bx, AUTHOR_EMAIL
+call echo
 
 jmp $                    ; Infinite jump loop to current address
+
+;------------------------------------------------------------------------------
+; Include files.
+; NOTE : It's important to keep the included files below the infinite loop
+;------------------------------------------------------------------------------
+%include 'utils/io.asm'
+
+; Data
+KERNEL_NAME:
+  db 'KERNEL > SYNX v0.0.1', 0
+
+AUTHOR_NAME:
+  db 'AUTHOR > Sayan Bhattacharjee' , 0
+
+AUTHOR_EMAIL:
+  db 'EMAIL  > aero.sayan@gmail.com' ,0
 
 ;------------------------------------------------------------------------------
 ; Insert padding and magic number
