@@ -48,6 +48,15 @@ call echo
 mov bx, AUTHOR_EMAIL
 call echo
 
+mov dx, 0x1234
+call echo_hex
+
+mov dx, 0xb008
+call echo_hex
+
+mov dx, 0xdeb6
+call echo_hex
+
 jmp $                    ; Infinite jump loop to current address
 
 ;------------------------------------------------------------------------------
