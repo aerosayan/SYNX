@@ -42,20 +42,14 @@ mov sp, bp
 mov bx, KERNEL_NAME
 call echo
 
+mov bx, KERNEL_VERSION
+call echo
+
 mov bx, AUTHOR_NAME
 call echo
 
 mov bx, AUTHOR_EMAIL
 call echo
-
-mov dx, 0x1234
-call echo_hex
-
-mov dx, 0xb008
-call echo_hex
-
-mov dx, 0xdeb6
-call echo_hex
 
 jmp $                    ; Infinite jump loop to current address
 
@@ -67,13 +61,17 @@ jmp $                    ; Infinite jump loop to current address
 
 ; Data
 KERNEL_NAME:
-  db 'KERNEL > SYNX v0.0.1', 0
+  db 'KERNEL > SYNX', 0
+
+KERNEL_VERSION:
+  db 'VER.   > 0.0.1',0
 
 AUTHOR_NAME:
   db 'AUTHOR > Sayan Bhattacharjee' , 0
 
 AUTHOR_EMAIL:
   db 'EMAIL  > aero.sayan@gmail.com' ,0
+
 
 ;------------------------------------------------------------------------------
 ; Insert padding and magic number
@@ -83,3 +81,12 @@ times 510 - ($-$$) db 0
 
 ; Insert magic number
 dw 0xaa55
+
+;------------------------------------------------------------------------------
+; The bootsector code above creates a bootsector of 512 bytes.
+; NOTE : Sectors are 1 indexed. Bootsector is sector 1 , the first.
+; Cyllinder, head and hdd are all 0 indexed.
+;------------------------------------------------------------------------------
+
+times 256 dw 0xbabe                      ; Sector 2 := 512 bytes
+times 256 dw 0xb008                      ; Sector 3 := 512 bytes
