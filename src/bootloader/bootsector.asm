@@ -51,6 +51,25 @@ call echo
 mov bx, AUTHOR_EMAIL
 call echo
 
+
+;------------------------------------------------------------------------------
+; Read from disk
+;------------------------------------------------------------------------------
+mov bx, 0x9000           ; Pointer to buffer
+                         ; es:bx = 0x0000:0x90000 = 0x9000
+                         ; TODO : Understand if es needs to be set?
+                         ; And will we use 0x9000 for loading data from disk.
+
+mov dh, 2                ; Number of sectors to read
+
+call load_disk
+
+mov dx, [0x9000]
+call echo_hex
+
+mov dx, [0x9000+512]
+call echo_hex
+
 jmp $                    ; Infinite jump loop to current address
 
 ;------------------------------------------------------------------------------
@@ -58,6 +77,7 @@ jmp $                    ; Infinite jump loop to current address
 ; NOTE : It's important to keep the included files below the infinite loop
 ;------------------------------------------------------------------------------
 %include 'utils/io.asm'
+%include 'utils/load_disk.asm'
 
 ; Data
 KERNEL_NAME:
@@ -86,7 +106,10 @@ dw 0xaa55
 ; The bootsector code above creates a bootsector of 512 bytes.
 ; NOTE : Sectors are 1 indexed. Bootsector is sector 1 , the first.
 ; Cyllinder, head and hdd are all 0 indexed.
+;
+; NOTE : Sector 1 is first sector of cyllinder 0 of head 0 of hdd 0.
+;        The bootsector is in sector 1.
 ;------------------------------------------------------------------------------
 
 times 256 dw 0xbabe                      ; Sector 2 := 512 bytes
-times 256 dw 0xb008                      ; Sector 3 := 512 bytes
+times 256 dw 0xcafe                      ; Sector 3 := 512 bytes
